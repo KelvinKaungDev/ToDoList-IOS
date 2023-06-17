@@ -1,18 +1,24 @@
-
 import UIKit
 
 class ListViewController: UITableViewController {
     
-    var lists = ["Eating", "Sleeping"]
+    var lists = [List]()
 
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let userList = List()
+        userList.title = "Studying"
+        userList.done = true
+        lists.append(userList)
         
-        if let userLists = defaults.array(forKey: "Lists") {
-            lists = userLists as! [String]
-        }
+        let userList1 = List()
+        userList1.title = "Dying"
+        lists.append(userList1)
+//        if let userLists = defaults.array(forKey: "userList") {
+//            lists = userLists as! [String]
+//        }
     }
 }
 
@@ -30,18 +36,18 @@ extension ListViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Lists", for: indexPath)
-        cell.textLabel?.text = lists[indexPath.row]
+        let title = lists[indexPath.row]
+        cell.textLabel?.text = title.title
+        
+        cell.accessoryType = title.done ? .checkmark : .none
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        lists[indexPath.row].done = !lists[indexPath.row].done
         
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
    }
 }
@@ -54,8 +60,10 @@ extension ListViewController {
         var newLists = UITextField()
         let alert =  UIAlertController(title: "Add To Do List", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add List", style: .default) { (action) in
-            self.lists.append(newLists.text!)
-            self.defaults.set(self.lists, forKey: "Lists")
+            let userList = List()
+            userList.title = newLists.text!
+            self.lists.append(userList)
+            self.defaults.set(self.lists, forKey: "userList")
             
             self.tableView.reloadData()
         }
