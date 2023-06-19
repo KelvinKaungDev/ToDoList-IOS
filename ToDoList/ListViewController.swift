@@ -4,21 +4,11 @@ class ListViewController: UITableViewController {
     
     var lists = [List]()
 
-    let defaults = UserDefaults.standard
+    let localStorage = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathExtension("lists.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let userList = List()
-        userList.title = "Studying"
-        userList.done = true
-        lists.append(userList)
-        
-        let userList1 = List()
-        userList1.title = "Dying"
-        lists.append(userList1)
-//        if let userLists = defaults.array(forKey: "userList") {
-//            lists = userLists as! [String]
-//        }
+        loadListData()
     }
 }
 
@@ -46,6 +36,7 @@ extension ListViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         lists[indexPath.row].done = !lists[indexPath.row].done
+        self.localstorageUpdate()
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
@@ -63,7 +54,7 @@ extension ListViewController {
             let userList = List()
             userList.title = newLists.text!
             self.lists.append(userList)
-            self.defaults.set(self.lists, forKey: "userList")
+            self.localstorageUpdate()
             
             self.tableView.reloadData()
         }
@@ -75,5 +66,29 @@ extension ListViewController {
         alert.addAction(action)
         present(alert, animated: true)
     }
+    
+    func localstorageUpdate() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(lists)
+            try data.write(to: localStorage!)
+        } catch {
+            print("error \(error)")
+        }
+        
+    }
+    
+    func loadListData() {
+        let data = try? Data(contentsOf: self.localStorage!)
+        let decoder = PropertyListDecoder()
+        do {
+            let result = try decoder.decode([List].self, from: data!)
+            lists = result
+        } catch {
+            print("error \(error)")
+        }
+    }
 }
+
 

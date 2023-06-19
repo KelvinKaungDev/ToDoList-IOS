@@ -1,6 +1,6 @@
 import Foundation
 
-class List {
+class List : Codable{
     var title : String = ""
     var done : Bool = false
 }
