@@ -1,14 +1,14 @@
 import UIKit
+import CoreData
 
 class ListViewController: UITableViewController {
     
     var lists = [List]()
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
-    let localStorage = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathExtension("lists.plist")
-    
     override func viewDidLoad() {
-        super.viewDidLoad()
         loadListData()
+        super.viewDidLoad()
     }
 }
 
@@ -35,8 +35,10 @@ extension ListViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        lists[indexPath.row].done = !lists[indexPath.row].done
-        self.localstorageUpdate()
+        context.delete(self.lists[indexPath.row])
+        self.lists.remove(at: indexPath.row)
+//        lists[indexPath.row].done = !lists[indexPath.row].done
+//        saveList()
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
@@ -51,11 +53,12 @@ extension ListViewController {
         var newLists = UITextField()
         let alert =  UIAlertController(title: "Add To Do List", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add List", style: .default) { (action) in
-            let userList = List()
+            let userList = List(context: self.context)
             userList.title = newLists.text!
+            userList.done = false
             self.lists.append(userList)
-            self.localstorageUpdate()
             
+            self.saveList()
             self.tableView.reloadData()
         }
         
@@ -67,12 +70,9 @@ extension ListViewController {
         present(alert, animated: true)
     }
     
-    func localstorageUpdate() {
-        let encoder = PropertyListEncoder()
-        
+    func saveList() {
         do {
-            let data = try encoder.encode(lists)
-            try data.write(to: localStorage!)
+            try self.context.save()
         } catch {
             print("error \(error)")
         }
@@ -80,11 +80,9 @@ extension ListViewController {
     }
     
     func loadListData() {
-        let data = try? Data(contentsOf: self.localStorage!)
-        let decoder = PropertyListDecoder()
+        let request : NSFetchRequest<List> = List.fetchRequest()
         do {
-            let result = try decoder.decode([List].self, from: data!)
-            lists = result
+            self.lists = try context.fetch(request)
         } catch {
             print("error \(error)")
         }
