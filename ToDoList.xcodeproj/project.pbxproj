@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		396EB2662A429C2E00F058E3 /* ListModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 396EB2642A429C2E00F058E3 /* ListModel.xcdatamodeld */; };
+		3992D9F02A4934DB00D8BE5C /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3992D9EF2A4934DB00D8BE5C /* CategoryViewController.swift */; };
 		39D09CA42A3704AE0068A747 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D09CA32A3704AE0068A747 /* AppDelegate.swift */; };
 		39D09CA62A3704AE0068A747 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D09CA52A3704AE0068A747 /* SceneDelegate.swift */; };
 		39D09CA82A3704AE0068A747 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D09CA72A3704AE0068A747 /* ListViewController.swift */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		396EB2652A429C2E00F058E3 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		3992D9EF2A4934DB00D8BE5C /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		39D09CA02A3704AE0068A747 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39D09CA32A3704AE0068A747 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		39D09CA52A3704AE0068A747 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				39D09CAE2A3704B00068A747 /* LaunchScreen.storyboard */,
 				39D09CA92A3704AE0068A747 /* Main.storyboard */,
 				39D09CA72A3704AE0068A747 /* ListViewController.swift */,
+				3992D9EF2A4934DB00D8BE5C /* CategoryViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -288,6 +291,7 @@
 				39D09CA82A3704AE0068A747 /* ListViewController.swift in Sources */,
 				396EB2662A429C2E00F058E3 /* ListModel.xcdatamodeld in Sources */,
 				39D09CA42A3704AE0068A747 /* AppDelegate.swift in Sources */,
+				3992D9F02A4934DB00D8BE5C /* CategoryViewController.swift in Sources */,
 				39D09CA62A3704AE0068A747 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

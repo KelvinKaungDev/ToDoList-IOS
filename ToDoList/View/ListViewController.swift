@@ -4,15 +4,22 @@ import CoreData
 class ListViewController: UITableViewController {
     
     var lists = [List]()
+    var selectedCategory : Category? {
+        didSet {
+            loadListData()
+        }
+    }
+    
+    @IBOutlet weak var userInput: UISearchBar!
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
-        loadListData()
+        userInput.delegate = self
         super.viewDidLoad()
     }
 }
 
-//For the Table View and Cell
+//MARK: - Table View and Cell
 
 extension ListViewController {
     
@@ -35,17 +42,18 @@ extension ListViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        context.delete(self.lists[indexPath.row])
-        self.lists.remove(at: indexPath.row)
-//        lists[indexPath.row].done = !lists[indexPath.row].done
-//        saveList()
+//        context.delete(self.lists[indexPath.row])
+//        self.lists.remove(at: indexPath.row)
+        lists[indexPath.row].done = !lists[indexPath.row].done
+        saveList()
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
    }
+    
 }
 
-//For the Local Storage for User List
+//MARK: - Store User List
 
 extension ListViewController {
     
@@ -56,6 +64,8 @@ extension ListViewController {
             let userList = List(context: self.context)
             userList.title = newLists.text!
             userList.done = false
+            userList.parentCategory = self.selectedCategory
+            
             self.lists.append(userList)
             
             self.saveList()
@@ -79,14 +89,47 @@ extension ListViewController {
         
     }
     
-    func loadListData() {
-        let request : NSFetchRequest<List> = List.fetchRequest()
+    func loadListData(with request : NSFetchRequest<List> = List.fetchRequest(), predicate : NSPredicate? = nil) {
+        let CategoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let multiPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [CategoryPredicate, multiPredicate])
+        } else {
+            request.predicate = CategoryPredicate
+        }
+        
         do {
             self.lists = try context.fetch(request)
         } catch {
             print("error \(error)")
         }
+        
+        tableView.reloadData()
     }
 }
+
+//MARK: - Search bar
+
+extension ListViewController : UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<List> = List.fetchRequest()
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.predicate = predicate
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadListData(with: request,predicate: predicate)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.count == 0 {
+            loadListData()
+            DispatchQueue.main.async {
+                searchBar.endEditing(true)
+            }
+        }
+    }
+}
+
+
 
 
