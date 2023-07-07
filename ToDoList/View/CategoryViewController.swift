@@ -1,14 +1,14 @@
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
     var category = [Category]()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
+//        loadData()
     }
     
     // MARK: - Table view data source
@@ -33,14 +33,14 @@ class CategoryViewController: UITableViewController {
         performSegue(withIdentifier: "Lists", sender: self)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let lists = segue.destination as! ListViewController
-        
-        if let index = tableView.indexPathForSelectedRow {
-            lists.selectedCategory = category[index.row]
-        }
-    }
-    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        let lists = segue.destination as! ListViewController
+//
+//        if let index = tableView.indexPathForSelectedRow {
+//            lists.selectedCategory = category[index.row]
+//        }
+//    }
+//
     //MARK: - Add Category
     
     @IBAction func addCategory(_ sender: UIBarButtonItem) {
@@ -48,11 +48,11 @@ class CategoryViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add Your Daily Category", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Caetgory", style: .default) { (action) in
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             newCategory.name = tempCategory.text!
             self.category.append(newCategory)
             
-            self.saveList()
+            self.saveList(categroy: newCategory)
             self.tableView.reloadData()
         }
         
@@ -65,21 +65,23 @@ class CategoryViewController: UITableViewController {
         present(alert, animated: true)
     }
     
-    func saveList() {
+    func saveList(categroy : Category) {
         do {
-            try self.context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("error \(error)")
         }
     }
     
-    func loadData() {
-        let request : NSFetchRequest<Category> = Category.fetchRequest()
-        do {
-            try category = context.fetch(request)
-        } catch {
-            print("error", error)
-        }
-    }
+//    func loadData() {
+//        let request : NSFetchRequest<Category> = Category.fetchRequest()
+//        do {
+//            try category = context.fetch(request)
+//        } catch {
+//            print("error", error)
+//        }
+//    }
    
 }
