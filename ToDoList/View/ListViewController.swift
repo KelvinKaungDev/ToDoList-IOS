@@ -44,10 +44,15 @@ extension ListViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        context.delete(self.lists[indexPath.row])
-//        self.lists.remove(at: indexPath.row)
-        lists?[indexPath.row].done = !(lists?[indexPath.row].done)!
-//        saveList()
+        if let list = lists?[indexPath.row] {
+            do{
+                try realm.write {
+                    list.done = !list.done
+                }
+            } catch {
+                print("error \(error)")
+            }
+        }
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
@@ -108,15 +113,11 @@ extension ListViewController {
 //MARK: - Search bar
 
 extension ListViewController : UISearchBarDelegate {
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request : NSFetchRequest<List> = List.fetchRequest()
-//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        request.predicate = predicate
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//        loadListData(with: request,predicate: predicate)
-//    }
-//
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        lists = lists?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "date", ascending: true)
+        tableView.reloadData()
+    }
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.count == 0 {
             loadListData()
