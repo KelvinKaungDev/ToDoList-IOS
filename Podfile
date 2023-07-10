@@ -18,4 +18,5 @@ target 'ToDoList' do
 
     pod 'Realm', '~> 10.41'
     pod 'RealmSwift'
+    pod 'SwipeCellKit'
 end
