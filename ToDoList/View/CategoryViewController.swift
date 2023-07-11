@@ -2,7 +2,7 @@ import UIKit
 import RealmSwift
 import SwipeCellKit
 
-class CategoryViewController: UITableViewController{
+class CategoryViewController: SwipeViewController{
     
     var category : Results<Category>?
     let realm = try! Realm()
@@ -79,37 +79,24 @@ class CategoryViewController: UITableViewController{
     
     func loadData() {
         category = realm.objects(Category.self)
-        
+    
         self.tableView.reloadData()
+    }
+    
+    override func updateSwipe(at indexPath: IndexPath) {
+        super.updateSwipe(at: indexPath)
+        
+        if let deleteCategory = category?[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(deleteCategory)
+                }
+            } catch {
+                print(error)
+            }
+        }
     }
    
 }
 
-extension CategoryViewController : SwipeTableViewCellDelegate {
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
 
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            if let deletedCategory = self.category?[indexPath.row] {
-                do {
-                    try self.realm.write {
-                        self.realm.delete(deletedCategory)
-                    }
-                }  catch {
-                    print("error \(error)")
-                }
-            }
-        }
-
-        // customize the action appearance
-        deleteAction.image = UIImage(named: "trash-circle")
-
-        return [deleteAction]
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        var options = SwipeOptions()
-        options.expansionStyle = .destructive
-        return options
-    }
-}
